@@ -16,15 +16,15 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
         public ObjectBuilder()
         {
             API.onClientEventTrigger += API_onClientEventTrigger;
-            if (!System.IO.Directory.Exists("resources/GT-MP Basic Map Editor/Settings"))
+            if (!System.IO.Directory.Exists("MapEditorSettings"))
             {
-                System.IO.Directory.CreateDirectory("resources/GT-MP Basic Map Editor/Settings");
+                System.IO.Directory.CreateDirectory("MapEditorSettings");
             }
-            if (System.IO.File.Exists("resources/GT-MP Basic Map Editor/Settings/ModelList.xml"))
+            if (System.IO.File.Exists("MapEditorSettings/ModelList.xml"))
             {
                 System.Xml.Serialization.XmlSerializer reader =
                 new System.Xml.Serialization.XmlSerializer(typeof(ModelList));
-                System.IO.StreamReader file = new System.IO.StreamReader("resources/GT-MP Basic Map Editor/Settings/ModelList.xml");
+                System.IO.StreamReader file = new System.IO.StreamReader("MapEditorSettings/ModelList.xml");
                 ObjectModels = (ModelList)reader.Deserialize(file);
                 file.Close();
                 if (ObjectModels == null)
@@ -39,7 +39,7 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
             }
             else
             {
-                API.consoleOutput(LogCat.Info, "resources/GT-MP Basic Map Editor/Settings/ModelList.xml does not exist.. Skip..");
+                API.consoleOutput(LogCat.Info, "MapEditorSettings/ModelList.xml does not exist.. Skip..");
                 ObjectModels = new ModelList();
             }
         }
@@ -118,7 +118,7 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
         {
             System.Xml.Serialization.XmlSerializer writer =
                 new System.Xml.Serialization.XmlSerializer(typeof(ModelList));
-            System.IO.FileStream file = System.IO.File.Create("resources/GT-MP Basic Map Editor/Settings/ModelList.xml");
+            System.IO.FileStream file = System.IO.File.Create("MapEditorSettings/ModelList.xml");
             writer.Serialize(file, ObjectModels);
             file.Close();
             API.sendNotificationToPlayer(player, "ModelList saved..");
