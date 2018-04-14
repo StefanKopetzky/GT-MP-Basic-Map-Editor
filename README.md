@@ -3,6 +3,10 @@ A very simple Map Editor for GT-MP
 
 **Min. Required GT-MP Version:** 0.1.7.x
 
+![](https://img.shields.io/github/release/MrNeta/GT-MP-Basic-Map-Editor.svg?maxAge=2592000)
+![](https://img.shields.io/github/downloads/MrNeta/GT-MP-Basic-Map-Editor/total.svg?maxAge=2592000)
+![](https://img.shields.io/badge/GT--MP%20Version-0.1.7.x-brightgreen.svg?maxAge=2592000)
+
 ## Commands
 ### General
 `/createmap <fileName>`
@@ -44,3 +48,7 @@ A very simple Map Editor for GT-MP
 `Numpad+` Z-Axis+
 
 `Numpad-` Z-Axis-
+
+`Left Shift` Faster Movement
+
+`Left Alt` Slower Movement
