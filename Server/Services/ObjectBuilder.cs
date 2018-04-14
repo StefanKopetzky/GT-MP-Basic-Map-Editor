@@ -159,6 +159,8 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
             DisableObjectEditor(player);
             player.sendChatMessage("Disabled Edit Object");
         }
+        public double slowmovementmultiplier = 0.2;
+        public double fastmovementmultiplier = 3;
 
         private void API_onClientEventTrigger(Client player, string eventName, params object[] arguments)
         {
@@ -177,8 +179,9 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
                     player.ActivatePositionMode();
                     break;
 
-                case "NumPad2": // X-
-                    if ((bool)arguments[0]) { multiplier = 2; }
+                case "NumPad5": // X-
+                    if ((bool)arguments[0]) { multiplier = fastmovementmultiplier; }
+                    if ((bool)arguments[1]) { multiplier = slowmovementmultiplier; }
                     if (player.PositionMode())
                     {
                         API.setEntityPosition(CurrentObject, CurrentObject.position - new Vector3(0.1 * multiplier, 0, 0));
@@ -188,7 +191,8 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
                     break;
 
                 case "NumPad4": // Y+
-                    if ((bool)arguments[0]) { multiplier = 2; }
+                    if ((bool)arguments[0]) { multiplier = fastmovementmultiplier; }
+                    if ((bool)arguments[1]) { multiplier = slowmovementmultiplier; }
                     if (player.PositionMode())
                     {
                         API.setEntityPosition(CurrentObject, CurrentObject.position + new Vector3(0, 0.1 * multiplier, 0));
@@ -198,7 +202,8 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
                     break;
 
                 case "NumPad6": // Y-
-                    if ((bool)arguments[0]) { multiplier = 2; }
+                    if ((bool)arguments[0]) { multiplier = fastmovementmultiplier; }
+                    if ((bool)arguments[1]) { multiplier = slowmovementmultiplier; }
                     if (player.PositionMode())
                     {
                         API.setEntityPosition(CurrentObject, CurrentObject.position - new Vector3(0, 0.1 * multiplier, 0));
@@ -208,7 +213,8 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
                     break;
 
                 case "NumPad8": // X+
-                    if ((bool)arguments[0]) { multiplier = 2; }
+                    if ((bool)arguments[0]) { multiplier = fastmovementmultiplier; }
+                    if ((bool)arguments[1]) { multiplier = slowmovementmultiplier; }
                     if (player.PositionMode())
                     {
                         API.setEntityPosition(CurrentObject, CurrentObject.position + new Vector3(0.1 * multiplier, 0, 0));
@@ -218,7 +224,8 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
                     break;
 
                 case "KeyAdd": // Z+
-                    if ((bool)arguments[0]) { multiplier = 2; }
+                    if ((bool)arguments[0]) { multiplier = fastmovementmultiplier; }
+                    if ((bool)arguments[1]) { multiplier = slowmovementmultiplier; }
                     if (player.PositionMode())
                     {
                         API.setEntityPosition(CurrentObject, CurrentObject.position + new Vector3(0, 0, 0.05 * multiplier));
@@ -228,7 +235,8 @@ namespace GT_MP_Basic_Map_Editor.Server.Services
                     break;
 
                 case "KeySubtract": // Z-
-                    if ((bool)arguments[0]) { multiplier = 2; }
+                    if ((bool)arguments[0]) { multiplier = fastmovementmultiplier; }
+                    if ((bool)arguments[1]) { multiplier = slowmovementmultiplier; }
                     if (player.PositionMode())
                     {
                         API.setEntityPosition(CurrentObject, CurrentObject.position - new Vector3(0, 0, 0.05 * multiplier));

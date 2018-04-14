@@ -54,6 +54,10 @@ namespace GT_MP_Basic_Map_Editor.Server.Handler
                         {
                             SelectEvent = "loadtrackdialog"
                         });
+                        menu.AddItem(new MenuItem("Load MapEditor Map", "~y~Guadmaz Map Editor")
+                        {
+                            SelectEvent = "loadmapeditordialog"
+                        });
                     }
                     else
                     {
@@ -73,9 +77,13 @@ namespace GT_MP_Basic_Map_Editor.Server.Handler
                             {
                                 SelectEvent = "cancelcreationdialog",
                             });
-                            menu.AddItem(new MenuItem("~b~Save Track")
+                            menu.AddItem(new MenuItem("~b~Save Map")
                             {
                                 SelectEvent = "savetrack"
+                            });
+                            menu.AddItem(new MenuItem("~b~Save as MapEditor Map", "~y~Guadmaz Map Editor")
+                            {
+                                SelectEvent = "savemapeditor"
                             });
                         }
                         else
@@ -110,6 +118,12 @@ namespace GT_MP_Basic_Map_Editor.Server.Handler
                         sender.CloseAllMenus();
                     }
                     break;
+                case "loadmapeditormap":
+                    {
+                        LoadEditorMapCmd(sender, Convert.ToString(arguments[0]));
+                        sender.CloseAllMenus();
+                    }
+                    break;
                 case "loadtrackdialog":
                     {
                         var mapmenu = new Menu("Map List", "Select a Map");
@@ -141,6 +155,37 @@ namespace GT_MP_Basic_Map_Editor.Server.Handler
                         mapmenu.Show(sender);
                     }
                     break;
+                case "loadmapeditordialog":
+                    {
+                        var mapmenu = new Menu("MapEditor List", "Select a Map");
+                        if (!Directory.Exists("MapEditorMaps"))
+                        {
+                            Directory.CreateDirectory("MapEditorMaps");
+                            API.shared.consoleOutput("Created MapEditorMaps Folder at Root Directory");
+                        }
+                        var maps = Directory.GetFiles("MapEditorMaps");
+                        if (maps.Length <= 0)
+                        {
+                            mapmenu.AddItem(new MenuItem("No maps found..")
+                            {
+                                SelectEvent = "F2KeyPressed"
+                            });
+                        }
+                        else
+                        {
+                            foreach (string map in maps)
+                            {
+                                var mapfile = map.Split('.');
+                                mapmenu.AddItem(new MenuItem(mapfile[0])
+                                {
+                                    SelectEvent = "loadmapeditormap",
+                                    SelectEventArg = mapfile[0].Split('\\')[1]
+                                });
+                            }
+                        }
+                        mapmenu.Show(sender);
+                    }
+                    break;
                 #endregion UnloadedTrackMenu
                 #region LoadedTrackMenu
                 case "forceobjectmenu":
@@ -152,8 +197,15 @@ namespace GT_MP_Basic_Map_Editor.Server.Handler
                     break;
                 case "savetrack":
                     {
-                        API.sendNotificationToAll($"~o~{sender.name}~w~ saved the map as ~b~RaceMaps/{CurrentMap.Name}.xml");
+                        API.sendNotificationToAll($"~o~{sender.name}~w~ saved the map as ~b~Maps/{CurrentMap.Name}.xml");
                         SaveRace(sender);
+                        sender.CloseAllMenus();
+                    }
+                    break;
+                case "savemapeditor":
+                    {
+                        API.sendNotificationToAll($"~o~{sender.name}~w~ saved the map as ~b~MapEditorMaps/{CurrentMap.Name}.xml");
+                        SaveRace(sender, true);
                         sender.CloseAllMenus();
                     }
                     break;
@@ -362,6 +414,30 @@ namespace GT_MP_Basic_Map_Editor.Server.Handler
             API.sendNotificationToAll($"Map ~b~{CurrentMap.Name} ~w~loaded by ~y~{player.name}");
         }
 
+        [Command("loadeditormap")]
+        public void LoadEditorMapCmd(Client player, string filename)
+        {
+            Map map = MapEditorService.LoadMapFromFile(filename);
+            if (map == null)
+            {
+                player.sendChatMessage("~r~Error~w~: Map not found..");
+                return;
+            }
+            CurrentMap = map;
+
+            map.MapObjects.ForEach(obj =>
+            {
+                var cobj = API.createObject(obj.Model, obj.Position, obj.Rotation);
+                var label = API.createTextLabel("Object ID: ~b~" + ObjectBuilder.NextObjId, player.position + new Vector3(0, 0, 1), 20f, 0.5f, true);
+                API.attachEntityToEntity(label, cobj, "", new Vector3(0, 0, 1), new Vector3());
+                ObjectBuilder.Labels.Add(ObjectBuilder.NextObjId, label);
+                Objects.Add(ObjectBuilder.NextObjId, cobj);
+                ObjectBuilder.NextObjId++;
+            });
+            CurrentMap.MapObjects.Clear();
+            API.sendNotificationToAll($"Map ~b~{CurrentMap.Name} ~w~loaded by ~y~{player.name}");
+        }
+
         public void LoadMap(Client player, string fileName)
         {
             Map map = MapService.LoadMapFromFile(fileName);
@@ -419,7 +495,7 @@ namespace GT_MP_Basic_Map_Editor.Server.Handler
             CurrentMap = null;
         }
 
-        public void SaveRace(Client player)
+        public void SaveRace(Client player, bool mapEditorFile = false)
         {
             if (CurrentMap == null) return;
             Objects.ToList().ForEach(obj =>
@@ -431,8 +507,16 @@ namespace GT_MP_Basic_Map_Editor.Server.Handler
                     Rotation = obj.Value.rotation
                 });
             });
-            MapService.SaveMap(CurrentMap, CurrentMap.Name);
-            API.sendChatMessageToPlayer(player, "Map Saved at ~b~Maps/" + CurrentMap.Name + ".xml");
+            if (mapEditorFile)
+            {
+                MapEditorService.SaveMap(CurrentMap, CurrentMap.Name);
+                API.sendChatMessageToPlayer(player, "Map Saved at ~b~MapEditorMaps/" + CurrentMap.Name + ".xml");
+            }
+            else
+            {
+                MapService.SaveMap(CurrentMap, CurrentMap.Name);
+                API.sendChatMessageToPlayer(player, "Map Saved at ~b~Maps/" + CurrentMap.Name + ".xml");
+            }
 
             Objects.ToList().ForEach(obj =>
             {

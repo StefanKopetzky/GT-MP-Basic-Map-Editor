@@ -55,6 +55,8 @@
     <Compile Include="Server\Models\GameMenu.cs" />
     <Compile Include="Server\Models\Map.cs" />
     <Compile Include="Server\Models\ModelList.cs" />
+    <Compile Include="Server\Models\Output\MapEditor.cs" />
+    <Compile Include="Server\Services\MapEditorService.cs" />
     <Compile Include="Server\Services\MapService.cs" />
     <Compile Include="Server\Services\ObjectBuilder.cs" />
   </ItemGroup>
